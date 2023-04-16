@@ -38,3 +38,9 @@
 
   document.getElementById('toggleBtn').onclick = function() {
     var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/toggle', true);
+    xhr.send();
+  };
+</script>
+</body>
+</html>
