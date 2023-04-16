@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+  <title>{{ title }}</title>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+
+<button id="toggleBtn">Start/Stop Polling</button>
+<div id="graphDiv"></div>
+
+<script>
+  var socket = io.connect('http://' + document.domain + ':' + location.port + '/beanery');
+
+  var trace1 = {
+    x: [],
+    y: [],
+    mode: 'lines+markers',
+    name: 'Temperature'
+  };
+
+  var data = [trace1];
+
+  var layout = {
+    title: "Tim's Beanery - Temperature Data",
+    xaxis: { title: 'Time (s)' },
+    yaxis: { title: 'Temperature (°C)' }
+  };
+
+  Plotly.newPlot('graphDiv', data, layout);
+
+  socket.on('temperature_data', function(msg) {
+    trace1.x.push(msg.time);
+    trace1.y.push(msg.temp);
+    Plotly.update('graphDiv', data);
+  });
+
+  document.getElementById('toggleBtn').onclick = function() {
+    var xhr = new XMLHttpRequest();
